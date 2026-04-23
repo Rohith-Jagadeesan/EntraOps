@@ -36,7 +36,7 @@ function Get-EligibleRoles {
             }
         }
     } catch {
-        Write-Host "⚠️ Could not fetch eligible roles: $_"
+        Write-Host "Could not fetch eligible roles: $_"
     }
     return $results
 }
@@ -54,11 +54,11 @@ function Get-PermanentRoles {
                 RoleName       = $roleDefinition.DisplayName
                 AssignmentType = "Permanent"
                 EndDate        = "Never"
-                Status         = "⚠️ Review for PIM eligibility"
+                Status         = "Review for PIM eligibility"
             }
         }
     } catch {
-        Write-Host "⚠️ Could not fetch permanent roles: $_"
+        Write-Host "Could not fetch permanent roles: $_"
     }
     return $results
 }
@@ -69,8 +69,8 @@ Write-Host "🔍 Fetching PIM role assignments..."
 $eligibleRoles  = Get-EligibleRoles
 $permanentRoles = Get-PermanentRoles
 
-Write-Host "✅ Eligible (PIM) roles found : $($eligibleRoles.Count)"
-Write-Host "✅ Permanent roles found       : $($permanentRoles.Count)"
+Write-Host "Eligible (PIM) roles found : $($eligibleRoles.Count)"
+Write-Host "Permanent roles found       : $($permanentRoles.Count)"
 
 $allRoles = @()
 $allRoles += $eligibleRoles
@@ -78,9 +78,9 @@ $allRoles += $permanentRoles
 
 if ($allRoles.Count -gt 0) {
     $allRoles | Export-Csv -Path "$PSScriptRoot/../reports/PIM_Audit_Report.csv" -NoTypeInformation
-    Write-Host "✅ PIM audit report exported to reports/PIM_Audit_Report.csv"
+    Write-Host "PIM audit report exported to reports/PIM_Audit_Report.csv"
 } else {
-    Write-Host "⚠️ No role data found — check permissions or assign a PIM eligible role first"
+    Write-Host "No role data found — check permissions or assign a PIM eligible role first"
 }
 
 Write-Host ""
