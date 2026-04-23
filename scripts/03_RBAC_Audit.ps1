@@ -6,7 +6,7 @@ Connect-AzAccount -UseDeviceAuthentication
 # ---------- GET SUBSCRIPTION ----------
 $subscription = Get-AzSubscription | Select-Object -First 1
 Set-AzContext -SubscriptionId $subscription.Id
-Write-Host "✅ Connected to subscription: $($subscription.Name)"
+Write-Host "Connected to subscription: $($subscription.Name)"
 
 # ---------- ALL ROLE ASSIGNMENTS ----------
 function Get-AllRoleAssignments {
@@ -33,7 +33,7 @@ function Get-ElevatedServicePrincipals {
         $_.ObjectType -eq "ServicePrincipal" -and $elevatedRoles -contains $_.Role
     }
     foreach ($item in $flagged) {
-        $item.Flag = "⚠️ Elevated SP access — review required"
+        $item.Flag = "Elevated SP access — review required"
     }
     return $flagged
 }
@@ -41,19 +41,19 @@ function Get-ElevatedServicePrincipals {
 # ---------- MAIN ----------
 Write-Host "🔍 Fetching Azure RBAC role assignments..."
 $allAssignments = Get-AllRoleAssignments
-Write-Host "✅ Total role assignments found: $($allAssignments.Count)"
+Write-Host "Total role assignments found: $($allAssignments.Count)"
 
 $elevatedSPs = Get-ElevatedServicePrincipals -assignments $allAssignments
-Write-Host "✅ Elevated service principals flagged: $($elevatedSPs.Count)"
+Write-Host "Elevated service principals flagged: $($elevatedSPs.Count)"
 
 # Export all assignments
 $allAssignments | Export-Csv -Path "$PSScriptRoot/../reports/RBAC_Audit_Report.csv" -NoTypeInformation
-Write-Host "✅ RBAC audit report exported to reports/RBAC_Audit_Report.csv"
+Write-Host "RBAC audit report exported to reports/RBAC_Audit_Report.csv"
 
 # Export elevated SPs separately
 if ($elevatedSPs.Count -gt 0) {
     $elevatedSPs | Export-Csv -Path "$PSScriptRoot/../reports/Elevated_SP_Access.csv" -NoTypeInformation
-    Write-Host "✅ Elevated SP report exported to reports/Elevated_SP_Access.csv"
+    Write-Host "Elevated SP report exported to reports/Elevated_SP_Access.csv"
 }
 
 Write-Host ""
