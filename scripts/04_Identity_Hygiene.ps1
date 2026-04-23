@@ -18,7 +18,7 @@ function Get-StaleAccounts {
                 UPN          = $user.UserPrincipalName
                 LastSignIn   = if ($lastSignIn) { $lastSignIn } else { "Never" }
                 AccountEnabled = $user.AccountEnabled
-                Flag         = "⚠️ Stale — no sign-in for 90+ days"
+                Flag         = "Stale — no sign-in for 90+ days"
             }
         }
     }
@@ -37,11 +37,11 @@ function Get-UsersWithoutMFA {
                 DisplayName   = $user.UserDisplayName
                 UPN           = $user.UserPrincipalName
                 MFARegistered = $false
-                Flag          = "⚠️ No MFA registered"
+                Flag          = "No MFA registered"
             }
         }
     } catch {
-        Write-Host "⚠️ Could not fetch MFA report: $_"
+        Write-Host "Could not fetch MFA report: $_"
     }
     return $results
 }
@@ -59,14 +59,14 @@ function Get-PermanentPrivilegedRoles {
                     DisplayName = $user.DisplayName
                     UPN         = $user.UserPrincipalName
                     Role        = $role.DisplayName
-                    Flag        = "⚠️ Permanent privileged role — convert to PIM eligible"
+                    Flag        = "Permanent privileged role — convert to PIM eligible"
                 }
             } catch {
                 # Skip service principals
             }
         }
     } catch {
-        Write-Host "⚠️ Could not fetch role assignments: $_"
+        Write-Host "Could not fetch role assignments: $_"
     }
     return $results
 }
@@ -78,24 +78,24 @@ $staleAccounts   = Get-StaleAccounts
 $noMFAUsers      = Get-UsersWithoutMFA
 $permanentRoles  = Get-PermanentPrivilegedRoles
 
-Write-Host "✅ Stale accounts found           : $($staleAccounts.Count)"
-Write-Host "✅ Users without MFA              : $($noMFAUsers.Count)"
-Write-Host "✅ Permanent privileged roles     : $($permanentRoles.Count)"
+Write-Host "Stale accounts found           : $($staleAccounts.Count)"
+Write-Host "Users without MFA              : $($noMFAUsers.Count)"
+Write-Host "Permanent privileged roles     : $($permanentRoles.Count)"
 
 # Export reports
 if ($staleAccounts.Count -gt 0) {
     $staleAccounts | Export-Csv -Path "$PSScriptRoot/../reports/Stale_Accounts.csv" -NoTypeInformation
-    Write-Host "✅ Stale accounts exported to reports/Stale_Accounts.csv"
+    Write-Host "Stale accounts exported to reports/Stale_Accounts.csv"
 }
 
 if ($noMFAUsers.Count -gt 0) {
     $noMFAUsers | Export-Csv -Path "$PSScriptRoot/../reports/No_MFA_Users.csv" -NoTypeInformation
-    Write-Host "✅ No MFA users exported to reports/No_MFA_Users.csv"
+    Write-Host "No MFA users exported to reports/No_MFA_Users.csv"
 }
 
 if ($permanentRoles.Count -gt 0) {
     $permanentRoles | Export-Csv -Path "$PSScriptRoot/../reports/Permanent_Privileged_Roles.csv" -NoTypeInformation
-    Write-Host "✅ Permanent roles exported to reports/Permanent_Privileged_Roles.csv"
+    Write-Host "Permanent roles exported to reports/Permanent_Privileged_Roles.csv"
 }
 
 # Summary report
@@ -112,4 +112,4 @@ Write-Host "--- HYGIENE SUMMARY ---"
 Write-Host "Stale accounts (90+ days)     : $($staleAccounts.Count)"
 Write-Host "Users without MFA             : $($noMFAUsers.Count)"
 Write-Host "Permanent privileged roles    : $($permanentRoles.Count)"
-Write-Host "✅ Full summary exported to reports/Hygiene_Summary.csv"
+Write-Host "Full summary exported to reports/Hygiene_Summary.csv"
