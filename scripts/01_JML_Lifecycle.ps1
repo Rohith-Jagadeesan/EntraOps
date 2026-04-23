@@ -21,11 +21,11 @@ function New-Joiner {
         } `
         -MailNickname ($UPN.Split("@")[0])
 
-    Write-Host "✅ User created: $($user.DisplayName) | $($user.Id)"
+    Write-Host "User created: $($user.DisplayName) | $($user.Id)"
 
     $body = @{ "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$($user.Id)" }
     Invoke-MgGraphRequest -Method POST -Uri "https://graph.microsoft.com/v1.0/groups/$GroupId/members/`$ref" -Body $body
-    Write-Host "✅ Added to group: $GroupId"
+    Write-Host "Added to group: $GroupId"
 }
 
 # ---------- LEAVER ----------
@@ -37,24 +37,24 @@ function Remove-Leaver {
     $user = Get-MgUser -Filter "userPrincipalName eq '$UPN'"
 
     if (-not $user) {
-        Write-Host "❌ User not found: $UPN"
+        Write-Host "User not found: $UPN"
         return
     }
 
     Update-MgUser -UserId $user.Id -AccountEnabled:$false
-    Write-Host "✅ Account disabled: $($user.DisplayName)"
+    Write-Host "Account disabled: $($user.DisplayName)"
 
     $groups = Get-MgUserMemberOf -UserId $user.Id
     foreach ($group in $groups) {
         try {
             Remove-MgGroupMemberByRef -GroupId $group.Id -DirectoryObjectId $user.Id
-            Write-Host "✅ Removed from group: $($group.Id)"
+            Write-Host "Removed from group: $($group.Id)"
         } catch {
-            Write-Host "⚠️ Skipped group $($group.Id): $_"
+            Write-Host "Skipped group $($group.Id): $_"
         }
     }
 
-    Write-Host "✅ Leaver process complete for $($user.DisplayName)"
+    Write-Host "Leaver process complete for $($user.DisplayName)"
 }
 
 # ---------- EXPORT REPORT ----------
@@ -69,7 +69,7 @@ function Export-UserReport {
         }
     } | Export-Csv -Path "$PSScriptRoot/../reports/JML_User_Report.csv" -NoTypeInformation
 
-    Write-Host "✅ User report exported to reports/JML_User_Report.csv"
+    Write-Host "User report exported to reports/JML_User_Report.csv"
 }
 
 # ---------- MAIN ----------
